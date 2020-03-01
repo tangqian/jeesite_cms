@@ -65,6 +65,11 @@
         <property name="ignoreAcceptHeader" value="true"/>
         <property name="favorPathExtension" value="true"/>
 	</bean>
+
+    <bean id="beetlConfig" class="org.beetl.ext.spring.BeetlGroupUtilConfiguration" init-method="init"/>
+    <bean id="viewResolver" class="org.beetl.ext.spring.BeetlSpringViewResolver">
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+    </bean>
 	
 	<!-- 定义视图文件解析 -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">

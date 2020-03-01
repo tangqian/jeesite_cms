@@ -3,9 +3,13 @@
  */
 package com.thinkgem.jeesite.common.persistence.interceptor;
 
+import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.persistence.dialect.Dialect;
+import com.thinkgem.jeesite.common.utils.Reflections;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.ExecutorException;
-import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ParameterMapping;
@@ -16,12 +20,7 @@ import org.apache.ibatis.scripting.xmltags.ForEachSqlNode;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
-
-import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.persistence.dialect.Dialect;
-import com.thinkgem.jeesite.common.utils.Reflections;
-import com.thinkgem.jeesite.common.utils.StringUtils;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -100,7 +99,7 @@ public class SQLHelper {
      */
     public static int getCount(final String sql, final Connection connection,
     							final MappedStatement mappedStatement, final Object parameterObject,
-    							final BoundSql boundSql, Log log) throws SQLException {
+    							final BoundSql boundSql, Logger log) throws SQLException {
     	String dbName = Global.getConfig("jdbc.type");
 		final String countSql;
 		if("oracle".equals(dbName)){
@@ -114,7 +113,7 @@ public class SQLHelper {
         ResultSet rs = null;
         try {
         	if (log.isDebugEnabled()) {
-                log.debug("COUNT SQL: " + StringUtils.replaceEach(countSql, new String[]{"\n","\t"}, new String[]{" "," "}));
+                log.debug("COUNT SQL: {}", StringUtils.replaceEach(countSql, new String[]{"\n","\t"}, new String[]{" "," "}));
             }
         	if (conn == null){
         		conn = mappedStatement.getConfiguration().getEnvironment().getDataSource().getConnection();

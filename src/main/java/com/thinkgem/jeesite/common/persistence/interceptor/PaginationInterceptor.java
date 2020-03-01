@@ -59,13 +59,11 @@ public class PaginationInterceptor extends BaseInterceptor {
                 String originalSql = boundSql.getSql().trim();
             	
                 //得到总记录数
-                page.setCount(SQLHelper.getCount(originalSql, null, mappedStatement, parameterObject, boundSql, log));
+                page.setCount(SQLHelper.getCount(originalSql, null, mappedStatement, parameterObject, boundSql, logger));
 
                 //分页查询 本地化对象 修改数据库注意修改实现
                 String pageSql = SQLHelper.generatePageSql(originalSql, page, DIALECT);
-//                if (log.isDebugEnabled()) {
-//                    log.debug("PAGE SQL:" + StringUtils.replace(pageSql, "\n", ""));
-//                }
+                logger.info("PAGE SQL:{}", StringUtils.replace(originalSql, "\n", "").replaceAll("\t+", " ").replaceAll(" +", " "));
                 invocation.getArgs()[2] = new RowBounds(RowBounds.NO_ROW_OFFSET, RowBounds.NO_ROW_LIMIT);
                 BoundSql newBoundSql = new BoundSql(mappedStatement.getConfiguration(), pageSql, boundSql.getParameterMappings(), boundSql.getParameterObject());
                 //解决MyBatis 分页foreach 参数失效 start
@@ -77,6 +75,12 @@ public class PaginationInterceptor extends BaseInterceptor {
                 MappedStatement newMs = copyFromMappedStatement(mappedStatement, new BoundSqlSqlSource(newBoundSql));
 
                 invocation.getArgs()[0] = newMs;
+            } else {
+                if (StringUtils.isBlank(boundSql.getSql())){
+                    return null;
+                }
+                String originalSql = boundSql.getSql().trim();
+                logger.info("SQL:{}", StringUtils.replace(originalSql, "\n", "").replaceAll("\t+", " ").replaceAll(" +", " "));
             }
 //        }
         return invocation.proceed();
